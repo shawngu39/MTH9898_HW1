@@ -1,20 +1,19 @@
-INCLUDES = -I./include -I../include
-CFLAGS = -Wall -g2
-ARCFLAGS = -cvq
-CC = g++
-ARC = ar
-SRC = src
-LIBS = -L../lib_archive -L../extlib_archive
-BIN = ./bin
+include ./makefile.inc
 
-all: test_sample
+all: lib_dep serial_scrub
 
-test_sample: test_sample.o
-	$(CC) -o $(BIN)/test_sample $(SRC)/test_sample.o $(LIBS) -lutil -llog4cpp -pthread
+lib_dep:
+	$(MAKE) -C ./lib/src
+
+serial_scrub: serial_scrub.o TradeRecord.o
+	mkdir -p bin
+	$(CC) -o $(BIN)/serial_scrub $(SRC)/serial_scrub.o $(SRC)/TradeRecord.o $(LIBS) -lutil -llog4cpp -pthread
 
 %.o: $(SRC)/%.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) -c -o $(SRC)/$@ $<
+	$(CC) $(CFLAGS) $(APPL_INCLUDES) -c -o $(SRC)/$@ $<
 
 clean:
 	rm -f $(BIN)/*
-	rm $(SRC)/*.o
+	rm -f $(SRC)/*.o
+	rm -f lib/libs/*.a
+	$(MAKE) -C ./lib/src clean
