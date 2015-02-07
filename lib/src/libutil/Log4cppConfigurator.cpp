@@ -6,11 +6,37 @@
 #include "log4cpp/OstreamAppender.hh"
 #include "log4cpp/Priority.hh"
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::map;
 
 void
 Log4cppConfigurator::configure(
     const string & streams
+    )
+{   
+    vector<string> stream_vec;
+    const char delim = ' ';
+    StringUtil::split(streams, delim, stream_vec);
+    _configure(stream_vec);
+}
+
+void
+Log4cppConfigurator::configure(
+    const map<string, string> & streams
+    )
+{
+    vector<string> stream_vec;
+    for (auto iter = streams.begin(); iter != streams.end(); ++iter)
+    {
+        stream_vec.push_back(iter->first);
+    }
+    _configure(stream_vec);
+}
+
+void
+Log4cppConfigurator::_configure(
+    const vector<string> & stream_vec
     )
 {
     log4cpp::Appender *appender1 =
@@ -20,10 +46,7 @@ Log4cppConfigurator::configure(
     log4cpp::Category& root = log4cpp::Category::getRoot();
     root.setPriority(log4cpp::Priority::INFO);
     root.addAppender(appender1);
-    
-    vector<string> stream_vec;
-    const char delim = ' ';
-    StringUtil::split(streams, delim, stream_vec);
+
     for (size_t idx = 0; idx < stream_vec.size(); ++idx)
     {
         log4cpp::Category& cat =

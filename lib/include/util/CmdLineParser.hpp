@@ -9,6 +9,8 @@ class CmdLineParser : public std::map<std::string, std::string>
 
     void parse(int argc, const char ** argv);
 
+    const std::map<std::string, std::string> & debug() const { return _debug; }
+
     void dump() const;
     
   private:
